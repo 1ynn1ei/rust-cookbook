@@ -64,8 +64,7 @@ impl ParserTree {
         let mut child_node = Node::new(child);
         child_node.set_parent(parent);
         let child_ref = self.pool.add(child_node);
-        let parent_node = self.pool.get_mut(parent);
-        parent_node.children.push(child_ref);
+        self.pool.get_mut(parent).children.push(child_ref);
         child_ref
     }
 
@@ -83,6 +82,20 @@ impl ParserTree {
 
         Ok(())
     }
+}
+
+pub fn change_b_extern(tree: &mut ParserTree, node_ref: PoolRef, new_value: String) -> Result<(), &'static str> {
+    let node =  tree.pool.get_mut(node_ref);
+    match node.node_type {
+        TestEnum::A => {
+            return Err("Expected TestEnum B, but found TestEnum A")
+        },
+        TestEnum::B(ref mut string) => {
+            *string = new_value;
+        }
+    }
+
+    Ok(())
 }
 
 
@@ -105,4 +118,13 @@ pub fn test_change_b() {
         TestEnum::B(str) => assert_eq!(*str, "B".to_string())
     }
 
+    match change_b_extern(&mut tree, 0, "C".to_string()) {
+        Ok(()) => {},
+        Err(_str) => assert!(false),
+    }
+
+    match &tree.pool.get(0).node_type {
+        TestEnum::A => assert!(false),
+        TestEnum::B(str) => assert_eq!(*str, "C".to_string())
+    }
 }
