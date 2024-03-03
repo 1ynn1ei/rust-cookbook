@@ -104,27 +104,27 @@ pub fn test_change_b() {
     let mut tree = ParserTree::new(TestEnum::B("A".to_string()));
     
     match &tree.pool.get(0).node_type {
-        TestEnum::A => assert!(false),
+        TestEnum::A => unreachable!(),
         TestEnum::B(str) => assert_eq!(*str, "A".to_string())
     }
 
     match tree.change_b(0, "B".to_string()) {
         Ok(()) => {},
-        Err(_str) => assert!(false),
+        Err(_str) => unreachable!(),
     }
 
     match &tree.pool.get(0).node_type {
-        TestEnum::A => assert!(false),
+        TestEnum::A => unreachable!(),
         TestEnum::B(str) => assert_eq!(*str, "B".to_string())
     }
 
     match change_b_extern(&mut tree, 0, "C".to_string()) {
         Ok(()) => {},
-        Err(_str) => assert!(false),
+        Err(_str) => unreachable!(),
     }
 
     match &tree.pool.get(0).node_type {
-        TestEnum::A => assert!(false),
+        TestEnum::A => unreachable!(),
         TestEnum::B(str) => assert_eq!(*str, "C".to_string())
     }
 }
